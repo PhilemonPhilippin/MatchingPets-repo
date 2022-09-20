@@ -10,11 +10,11 @@ namespace MatchingPets.WF
         string secondChoice;
         int tries;
         List<PictureBox> pictures = new();
-        PictureBox picA;
-        PictureBox picB;
+        PictureBox pictureOne;
+        PictureBox pictureTwo;
         int totalTime = 30;
         int countDownTime;
-        bool gameOver = false;
+        bool gameOver;
 
         public Form1()
         {
@@ -26,17 +26,17 @@ namespace MatchingPets.WF
         {
             countDownTime--;
 
-            lblTimeLeft.Text = "Time left: " + countDownTime.ToString();
+            lblTimeLeft.Text = $"Time left: {countDownTime}";
 
             if (countDownTime < 1)
             {
-                GameOver("Times up, you lose");
+                GameOver("Times up, you lose. ");
 
-                foreach (PictureBox x in pictures)
+                foreach (PictureBox picture in pictures)
                 {
-                    if (x.Tag != null)
+                    if (picture.Tag is not null)
                     {
-                        x.Image = Image.FromFile("pics/" + (string)x.Tag + ".png");
+                        picture.Image = Image.FromFile($"pics/{(string)picture.Tag}.png");
                     }
                 }
             }
@@ -49,33 +49,33 @@ namespace MatchingPets.WF
 
         private void LoadPictures()
         {
-            int leftPos = 20;
-            int topPos = 20;
+            int leftPosition = 20;
+            int topPosition = 20;
             int rows = 0;
 
             for (int i = 0; i < 12; i++)
             {
-                PictureBox newPic = new();
-                newPic.Height = 50;
-                newPic.Width = 50;
-                newPic.BackColor = Color.LightGray;
-                newPic.SizeMode = PictureBoxSizeMode.StretchImage;
-                newPic.Click += NewPic_Click;
-                pictures.Add(newPic);
+                PictureBox newPicture = new();
+                newPicture.Height = 50;
+                newPicture.Width = 50;
+                newPicture.BackColor = Color.LightGray;
+                newPicture.SizeMode = PictureBoxSizeMode.StretchImage;
+                newPicture.Click += NewPic_Click;
+                pictures.Add(newPicture);
 
                 if (rows < 3)
                 {
                     rows++;
-                    newPic.Left = leftPos;
-                    newPic.Top = topPos;
-                    this.Controls.Add(newPic);
-                    leftPos = leftPos + 60;
+                    newPicture.Left = leftPosition;
+                    newPicture.Top = topPosition;
+                    Controls.Add(newPicture);
+                    leftPosition = leftPosition + 60;
                 }
 
                 if (rows == 3)
                 {
-                    leftPos = 20;
-                    topPos += 60;
+                    leftPosition = 20;
+                    topPosition += 60;
                     rows = 0;
                 }
             }
@@ -89,28 +89,28 @@ namespace MatchingPets.WF
                 return;
             }
             
-            if (firstChoice == null)
+            if (firstChoice is null)
             {
-                picA = sender as PictureBox;
-                if (picA.Tag != null && picA.Image == null)
+                pictureOne = sender as PictureBox;
+                if (pictureOne.Tag is not null && pictureOne.Image is null)
                 {
-                    picA.Image = Image.FromFile("pics/" + (string)picA.Tag + ".png");
-                    firstChoice = (string)picA.Tag;
+                    pictureOne.Image = Image.FromFile($"pics/{(string)pictureOne.Tag}.png");
+                    firstChoice = (string)pictureOne.Tag;
                 }
             }
-            else if (secondChoice == null)
+            else if (secondChoice is null)
             {
-                picB = sender as PictureBox;
+                pictureTwo = sender as PictureBox;
 
-                if (picB.Tag != null && picB.Image == null)
+                if (pictureTwo.Tag is not null && pictureTwo.Image is null)
                 {
-                    picB.Image = Image.FromFile("pics/" + (string)picB.Tag + ".png");
-                    secondChoice = (string)picB.Tag;
+                    pictureTwo.Image = Image.FromFile($"pics/{(string)pictureTwo.Tag}.png");
+                    secondChoice = (string)pictureTwo.Tag;
                 }
             }
             else
             {
-                CheckPictures(picA, picB);
+                CheckPictures(pictureOne, pictureTwo);
             }
         }
 
@@ -126,49 +126,48 @@ namespace MatchingPets.WF
             }
 
             tries = 0;
-            lblStatus.Text = "Mismatched: " + tries + " times.";
-            lblTimeLeft.Text = "Time left: " + totalTime;
+            lblStatus.Text = $"Mismatched: {tries} times.";
+            lblTimeLeft.Text = $"Time left: {totalTime}";
             gameOver = false;
             GameTimer.Start();
             countDownTime = totalTime;
         }
 
-        private void CheckPictures(PictureBox A, PictureBox B)
+        private void CheckPictures(PictureBox PictureOne, PictureBox PictureTwo)
         {
             if (firstChoice == secondChoice)
             {
-                A.Tag = null;
-                B.Tag = null;
+                PictureOne.Tag = null;
+                PictureTwo.Tag = null;
             }
             else
             {
                 tries++;
-                lblStatus.Text = "Mismatched " + tries + " times.";
+                lblStatus.Text = $"Mismatched: {tries} times.";
             }
 
             firstChoice = null;
             secondChoice = null;
 
-            foreach (PictureBox pics in pictures.ToList())
+            foreach (PictureBox picture in pictures.ToList())
             {
-                if (pics.Tag != null)
+                if (picture.Tag is not null)
                 {
-                    pics.Image = null;
+                    picture.Image = null;
                 }
             }
 
-            if (pictures.All(o => o.Tag == pictures[0].Tag))
+            if (pictures.All(pict => pict.Tag == pictures[0].Tag))
             {
                 GameOver("Great work, You Win!!");
             }
-
         }
 
         private void GameOver(string msg)
         {
             GameTimer.Stop();
             gameOver = true;
-            MessageBox.Show(msg + " Click Restart to Play Again", "Tarcacode Says: ");
+            MessageBox.Show($"{msg} Click Restart to Play Again", "Tarcacode Says: ");
         }
     }
 }
