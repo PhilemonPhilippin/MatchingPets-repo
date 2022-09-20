@@ -32,7 +32,7 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.lblTimeLeft = new System.Windows.Forms.Label();
             this.btnRestart = new System.Windows.Forms.Button();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.GameTimer = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // lblStatus
@@ -65,10 +65,10 @@
             this.btnRestart.UseVisualStyleBackColor = true;
             this.btnRestart.Click += new System.EventHandler(this.RestartGameEvent);
             // 
-            // timer1
+            // GameTimer
             // 
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.TimerEvent);
+            this.GameTimer.Interval = 1000;
+            this.GameTimer.Tick += new System.EventHandler(this.TimerEvent);
             // 
             // Form1
             // 
@@ -90,6 +90,6 @@
         private Label lblStatus;
         private Label lblTimeLeft;
         private Button btnRestart;
-        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.Timer GameTimer;
     }
 }

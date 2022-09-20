@@ -13,7 +13,7 @@ namespace MatchingPets.WF
         PictureBox picA;
         PictureBox picB;
         int totalTime = 30;
-        int countDown;
+        int countDownTime;
         bool gameOver = false;
 
         public Form1()
@@ -24,12 +24,27 @@ namespace MatchingPets.WF
 
         private void TimerEvent(object sender, EventArgs e)
         {
+            countDownTime--;
 
+            lblTimeLeft.Text = "Time left: " + countDownTime.ToString();
+
+            if (countDownTime < 1)
+            {
+                GameOver("Times up, you lose");
+
+                foreach (PictureBox x in pictures)
+                {
+                    if (x.Tag != null)
+                    {
+                        x.Image = Image.FromFile("pics/" + (string)x.Tag + ".png");
+                    }
+                }
+            }
         }
 
         private void RestartGameEvent(object sender, EventArgs e)
         {
-
+            RestartGame();
         }
 
         private void LoadPictures()
@@ -69,22 +84,91 @@ namespace MatchingPets.WF
 
         private void NewPic_Click(object sender, EventArgs e)
         {
+            if (gameOver)
+            {
+                return;
+            }
+            
+            if (firstChoice == null)
+            {
+                picA = sender as PictureBox;
+                if (picA.Tag != null && picA.Image == null)
+                {
+                    picA.Image = Image.FromFile("pics/" + (string)picA.Tag + ".png");
+                    firstChoice = (string)picA.Tag;
+                }
+            }
+            else if (secondChoice == null)
+            {
+                picB = sender as PictureBox;
 
+                if (picB.Tag != null && picB.Image == null)
+                {
+                    picB.Image = Image.FromFile("pics/" + (string)picB.Tag + ".png");
+                    secondChoice = (string)picB.Tag;
+                }
+            }
+            else
+            {
+                CheckPictures(picA, picB);
+            }
         }
 
         private void RestartGame()
         {
+            List<int> randomList = numbers.OrderBy(x => Guid.NewGuid()).ToList();
+            numbers = randomList;
 
+            for (int i = 0; i < pictures.Count; i++)
+            {
+                pictures[i].Image = null;
+                pictures[i].Tag = numbers[i].ToString();
+            }
+
+            tries = 0;
+            lblStatus.Text = "Mismatched: " + tries + " times.";
+            lblTimeLeft.Text = "Time left: " + totalTime;
+            gameOver = false;
+            GameTimer.Start();
+            countDownTime = totalTime;
         }
 
         private void CheckPictures(PictureBox A, PictureBox B)
         {
+            if (firstChoice == secondChoice)
+            {
+                A.Tag = null;
+                B.Tag = null;
+            }
+            else
+            {
+                tries++;
+                lblStatus.Text = "Mismatched " + tries + " times.";
+            }
+
+            firstChoice = null;
+            secondChoice = null;
+
+            foreach (PictureBox pics in pictures.ToList())
+            {
+                if (pics.Tag != null)
+                {
+                    pics.Image = null;
+                }
+            }
+
+            if (pictures.All(o => o.Tag == pictures[0].Tag))
+            {
+                GameOver("Great work, You Win!!");
+            }
 
         }
 
-        private void GameOver()
+        private void GameOver(string msg)
         {
-
+            GameTimer.Stop();
+            gameOver = true;
+            MessageBox.Show(msg + " Click Restart to Play Again", "Tarcacode Says: ");
         }
     }
 }
